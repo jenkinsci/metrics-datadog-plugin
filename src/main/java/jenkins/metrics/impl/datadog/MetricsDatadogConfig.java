@@ -51,7 +51,7 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
     public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
         setEndpointsList(req.bindJSONToList(DataDogEndpoint.class, json.get("endpointsList")));
         save();
-        Jenkins.getActiveInstance().getPlugin(PluginImpl.class).updateReporters();
+        Jenkins.get().getPlugin(PluginImpl.class).updateReporters();
         return true;
     }
 
