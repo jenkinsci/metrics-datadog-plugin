@@ -1,0 +1,12 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
+  <f:entry title="Statsd host" field="statsdHost">
+    <f:textbox/>
+  </f:entry>
+  <f:entry title="Port" field="port">
+      <f:textbox/>
+  </f:entry>
+  <f:entry title="Tags" field="tags">
+    <f:repeatableHeteroProperty field="tags" hasHeader="true"/>
+  </f:entry>
+</j:jelly>
