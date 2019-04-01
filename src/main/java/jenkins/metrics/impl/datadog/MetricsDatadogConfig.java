@@ -1,5 +1,6 @@
 package jenkins.metrics.impl.datadog;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.Util;
@@ -63,15 +64,14 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
             this.tags = tags;
         }
 
+        @NonNull
         public List<Tag> getTags() {
-            return tags;
+            return Util.fixNull(tags);
         }
 
         public List<String> getMergedTags() {
             List<String> mergedTags = new ArrayList<>();
-            if (tags != null) {
-                tags.forEach(t -> mergedTags.add(t.getKey()+ ":" + t.getValue()));
-            }
+            getTags().forEach(t -> mergedTags.add(t.getKey()+ ":" + t.getValue()));
             return mergedTags;
         }
 
