@@ -75,6 +75,14 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
             return mergedTags;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            DataDogEndpoint that = (DataDogEndpoint) o;
+            return Objects.equals(tags, that.tags);
+        }
+
     }
 
     public static class DatadogUdpEndpoint extends DataDogEndpoint {
@@ -108,15 +116,14 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (!(o instanceof DatadogUdpEndpoint)) return false;
             DatadogUdpEndpoint that = (DatadogUdpEndpoint) o;
-            return port == that.port &&
-                    Objects.equals(statsdHost, that.statsdHost);
+            return port == that.port && Objects.equals(statsdHost, that.statsdHost) && super.equals(o);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(statsdHost, port);
+            return Objects.hash(statsdHost, port, getTags());
         }
 
         @Override
