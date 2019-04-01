@@ -1,7 +1,5 @@
 package jenkins.metrics.impl.datadog;
 
-import hudson.model.Descriptor;
-import hudson.util.DescribableList;
 import jenkins.metrics.impl.datadog.MetricsDatadogConfig.DataDogEndpoint;
 import jenkins.metrics.impl.datadog.MetricsDatadogConfig.DatadogUdpEndpoint;
 import com.codahale.metrics.MetricRegistry;
@@ -12,7 +10,12 @@ import jenkins.metrics.api.Metrics;
 import org.coursera.metrics.datadog.transport.Transport;
 import org.coursera.metrics.datadog.transport.UdpTransport;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
