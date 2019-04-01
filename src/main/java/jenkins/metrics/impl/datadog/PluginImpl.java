@@ -103,7 +103,6 @@ public class PluginImpl extends Plugin {
 
         if (endpoint instanceof DatadogUdpEndpoint) {
             DatadogUdpEndpoint udpEndpoint = (DatadogUdpEndpoint) endpoint;
-            EnumSet<Expansion> expansions = EnumSet.of(Expansion.COUNT);
             return new UdpTransport.Builder()
                     .withStatsdHost(udpEndpoint.getStatsdHost())
                     .withPort(udpEndpoint.getPort())
