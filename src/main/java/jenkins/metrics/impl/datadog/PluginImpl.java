@@ -1,21 +1,21 @@
 package jenkins.metrics.impl.datadog;
 
-import jenkins.metrics.impl.datadog.MetricsDatadogConfig.DataDogEndpoint;
-import jenkins.metrics.impl.datadog.MetricsDatadogConfig.DatadogUdpEndpoint;
 import com.codahale.metrics.MetricRegistry;
-import org.coursera.metrics.datadog.DatadogReporter;
-import org.coursera.metrics.datadog.DatadogReporter.Expansion;
 import hudson.Plugin;
 import jenkins.metrics.api.Metrics;
+import jenkins.metrics.impl.datadog.MetricsDatadogConfig.DataDogEndpoint;
+import jenkins.metrics.impl.datadog.MetricsDatadogConfig.DatadogUdpEndpoint;
+import org.coursera.metrics.datadog.DatadogReporter;
+import org.coursera.metrics.datadog.DatadogReporter.Expansion;
 import org.coursera.metrics.datadog.transport.Transport;
 import org.coursera.metrics.datadog.transport.UdpTransport;
 
-import java.util.EnumSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,6 +70,11 @@ public class PluginImpl extends Plugin {
             toStop.remove(endpoint);
             if (reporters.containsKey(endpoint)) continue;
 
+            if (!endpoint.isValid()) {
+                LOGGER.log(Level.WARNING, "Ignoring invalid DataDog endpoint {0}", new Object[]{endpoint});
+                continue;
+            }
+
             Transport transporter = createTransporter(endpoint);
             if (transporter == null) {
                 LOGGER.warning("Unknown DataDog transporter. Skipping DataDog endpoint configuration.");
@@ -111,4 +116,5 @@ public class PluginImpl extends Plugin {
 
         return null;
     }
+
 }

@@ -7,13 +7,17 @@ import hudson.Util;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
 import hudson.util.DescribableList;
+import hudson.util.FormValidation;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -83,6 +87,7 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
             return Objects.equals(tags, that.tags);
         }
 
+        abstract boolean isValid();
     }
 
     public static class DatadogUdpEndpoint extends DataDogEndpoint {
@@ -107,9 +112,23 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
 
         @Extension
         public static class DescriptorImpl extends Descriptor<DataDogEndpoint> {
+
             @Override
             public String getDisplayName() {
                 return "Dogstatsd (UDP)";
+            }
+
+            public FormValidation doTestUdpEndpoint(@QueryParameter("statsdHost") final String formStatsdHost, @QueryParameter("port") final int formPort) {
+                try{
+                    if (formStatsdHost == null || formStatsdHost.isEmpty()) return FormValidation.error("Invalid statsd host");
+                    if (formPort == 0) return FormValidation.error("Invalid port");
+                    new DatadogUdpEndpoint(null, formStatsdHost, formPort).checkResolvable();
+                } catch (UnknownHostException e) {
+                    return FormValidation.error("Invalid statsd host: unresolvable");
+                } catch (IllegalArgumentException e) {
+                    return FormValidation.error(e.getMessage());
+                }
+                return FormValidation.ok("OK");
             }
         }
 
@@ -132,6 +151,24 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
                     "statsdHost='" + statsdHost + '\'' +
                     ", port=" + port +
                     '}';
+        }
+
+        @Override
+        public boolean isValid() {
+            try {
+                if (this.statsdHost == null || this.statsdHost.isEmpty()) return false;
+                checkResolvable();
+            } catch (UnknownHostException|IllegalArgumentException e) {
+                return false;
+            }
+            return true;
+        }
+
+        private void checkResolvable() throws UnknownHostException, IllegalArgumentException {
+            InetAddress.getByName(this.statsdHost); //  throw UnknownHostException if host unresolvable
+            if (this.port <= 0 || this.port > 65535) {
+                throw new IllegalArgumentException("Invalid port");
+            }
         }
     }
 
