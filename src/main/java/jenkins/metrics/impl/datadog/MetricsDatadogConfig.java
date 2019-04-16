@@ -115,16 +115,16 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
 
             @Override
             public String getDisplayName() {
-                return "Dogstatsd (UDP)";
+                return Messages.DatadogUdpEndpoint_DescriptorImpl_displayName();
             }
 
             public FormValidation doTestUdpEndpoint(@QueryParameter("statsdHost") final String formStatsdHost, @QueryParameter("port") final int formPort) {
                 try{
-                    if (formStatsdHost == null || formStatsdHost.isEmpty()) return FormValidation.error("Invalid statsd host");
-                    if (formPort == 0) return FormValidation.error("Invalid port");
+                    if (formStatsdHost == null || formStatsdHost.isEmpty()) return FormValidation.error("");
+                    if (formPort == 0) return FormValidation.error(Messages.DatadogUdpEndpoint_DescriptorImpl_errors_validation_invalidPort());
                     new DatadogUdpEndpoint(null, formStatsdHost, formPort).checkResolvable();
                 } catch (UnknownHostException e) {
-                    return FormValidation.error("Invalid statsd host: unresolvable");
+                    return FormValidation.error(Messages.DatadogUdpEndpoint_DescriptorImpl_errors_validation_invalidHost());
                 } catch (IllegalArgumentException e) {
                     return FormValidation.error(e.getMessage());
                 }
@@ -167,7 +167,7 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
         private void checkResolvable() throws UnknownHostException, IllegalArgumentException {
             InetAddress.getByName(this.statsdHost); //  throw UnknownHostException if host unresolvable
             if (this.port <= 0 || this.port > 65535) {
-                throw new IllegalArgumentException("Invalid port");
+                throw new IllegalArgumentException(Messages.DatadogUdpEndpoint_DescriptorImpl_errors_validation_invalidPort());
             }
         }
     }
@@ -195,7 +195,7 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
         public static class DescriptorImpl extends Descriptor<Tag> {
             @Override
             public String getDisplayName() {
-                return "Key/Value";
+                return Messages.Tag_DescriptorImpl_displayName();
             }
         }
 

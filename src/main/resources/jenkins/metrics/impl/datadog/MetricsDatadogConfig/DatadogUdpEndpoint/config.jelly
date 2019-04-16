@@ -1,13 +1,13 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
-  <f:entry title="Statsd host" field="statsdHost">
+  <f:entry title="${%statsdHost}" field="statsdHost">
     <f:textbox/>
   </f:entry>
-  <f:entry title="Port" field="port">
+  <f:entry title="${%port}" field="port">
       <f:textbox/>
   </f:entry>
-  <f:entry title="Tags" field="tags">
+  <f:entry title="${%tags}" field="tags">
     <f:repeatableHeteroProperty field="tags" hasHeader="true"/>
   </f:entry>
-  <f:validateButton title="Test connectivity" progress="Testing" method="testUdpEndpoint" with="statsdHost,port" />
+  <f:validateButton title="${%testConnectivity}" progress="${%testing}" method="testUdpEndpoint" with="statsdHost,port" />
 </j:jelly>
