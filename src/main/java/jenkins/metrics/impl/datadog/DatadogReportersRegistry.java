@@ -21,14 +21,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class MetricsDatadogReporter {
+class DatadogReportersRegistry {
 
-    private static final Logger LOGGER = Logger.getLogger(MetricsDatadogReporter.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(DatadogReportersRegistry.class.getName());
 
     @NonNull
     private transient Map<DataDogEndpoint, DatadogReporter> reporters;
 
-    MetricsDatadogReporter() {
+    DatadogReportersRegistry() {
         this.reporters = new LinkedHashMap<>();
     }
 

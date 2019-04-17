@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MetricsDatadogReporterTest {
+public class DatadogReporterRegistryTest {
 
     @Rule
     public RestartableJenkinsRule rr = new RestartableJenkinsRule();
@@ -26,7 +26,7 @@ public class MetricsDatadogReporterTest {
 
             config.setEndpointsList(list);
             r.configRoundtrip();
-            assertThat(config.getReporter().getReporters().size()).isEqualTo(2);
+            assertThat(config.getRegistry().getReporters().size()).isEqualTo(2);
         });
         rr.then(r -> {
             MetricsDatadogConfig config = MetricsDatadogConfig.instanceOrDie();
@@ -37,7 +37,7 @@ public class MetricsDatadogReporterTest {
             config.setEndpointsList(list);
             r.configRoundtrip();
             // only one reporter here as one is invalid
-            assertThat(config.getReporter().getReporters().size()).isEqualTo(1);
+            assertThat(config.getRegistry().getReporters().size()).isEqualTo(1);
         });
     }
 

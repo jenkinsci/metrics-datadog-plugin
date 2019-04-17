@@ -36,22 +36,22 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
 
     private DescribableList<DataDogEndpoint, Descriptor<DataDogEndpoint>> endpointsList;
 
-    private transient MetricsDatadogReporter reporter;
+    private transient DatadogReportersRegistry registry;
 
     public MetricsDatadogConfig() {
         load();
         if (endpointsList == null) {
             endpointsList = new DescribableList<DataDogEndpoint, Descriptor<DataDogEndpoint>>(this);
         }
-        reporter = new MetricsDatadogReporter();
-        reporter.updateReporters(endpointsList.toList());
+        registry = new DatadogReportersRegistry();
+        registry.updateReporters(endpointsList.toList());
     }
 
     @Terminator(after= TermMilestone.STARTED)
     @Restricted(NoExternalUse.class)
     public static void shutdown() {
         MetricsDatadogConfig config = instanceOrDie();
-        config.reporter.stopReporters();
+        config.getRegistry().stopReporters();
     }
 
     public DescribableList<DataDogEndpoint, Descriptor<DataDogEndpoint>> getEndpointsList() {
@@ -66,15 +66,15 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
         }
     }
 
-    public MetricsDatadogReporter getReporter() {
-        return reporter;
+    public DatadogReportersRegistry getRegistry() {
+        return registry;
     }
 
     @Override
     public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
         setEndpointsList(req.bindJSONToList(DataDogEndpoint.class, json.get("endpointsList")));
         save();
-        reporter.updateReporters(endpointsList.toList());
+        getRegistry().updateReporters(endpointsList.toList());
         return true;
     }
 
