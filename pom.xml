@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>io.jenkins.plugins</groupId>
-    <artifactId>metrics-datadog-plugin</artifactId>
+    <artifactId>metrics-datadog</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>hpi</packaging>
 
@@ -20,7 +20,7 @@
     </properties>
 
     <name>Metrics DataDog Plugin</name>
-    <description>This plugin pushes metrics to DataDog.</description>
+    <description>This plugin is a Metrics Plugin reporter for DataDog.</description>
 
     <licenses>
         <license>
@@ -63,14 +63,14 @@
         </developer>
     </developers>
 
-    <!-- Assuming you want to host on @jenkinsci:
-    <url>https://wiki.jenkins.io/display/JENKINS/TODO+Plugin</url>
+
+    <url>https://wiki.jenkins.io/display/JENKINS/Metrics-Datadog-Plugin</url>
     <scm>
         <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
     </scm>
-    -->
+
     <repositories>
         <repository>
             <id>repo.jenkins-ci.org</id>
@@ -83,4 +83,6 @@
             <url>https://repo.jenkins-ci.org/public/</url>
         </pluginRepository>
     </pluginRepositories>
+
+
 </project>
