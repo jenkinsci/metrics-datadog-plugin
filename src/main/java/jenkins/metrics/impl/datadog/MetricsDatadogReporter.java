@@ -1,7 +1,7 @@
 package jenkins.metrics.impl.datadog;
 
 import com.codahale.metrics.MetricRegistry;
-import hudson.Plugin;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import jenkins.metrics.api.Metrics;
 import jenkins.metrics.impl.datadog.MetricsDatadogConfig.DataDogEndpoint;
 import jenkins.metrics.impl.datadog.MetricsDatadogConfig.DatadogUdpEndpoint;
@@ -10,58 +10,36 @@ import org.coursera.metrics.datadog.DatadogReporter.Expansion;
 import org.coursera.metrics.datadog.transport.Transport;
 import org.coursera.metrics.datadog.transport.UdpTransport;
 
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.EnumSet;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class PluginImpl extends Plugin {
+class MetricsDatadogReporter {
 
-    private static final Logger LOGGER = Logger.getLogger(PluginImpl.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MetricsDatadogReporter.class.getName());
 
+    @NonNull
     private transient Map<DataDogEndpoint, DatadogReporter> reporters;
 
-    public PluginImpl() {
+    MetricsDatadogReporter() {
         this.reporters = new LinkedHashMap<>();
     }
 
-    @Override
-    public void start() throws Exception {
+    void stopReporters() {
+        LOGGER.info("Stopping DataDog reporters.");
+        reporters.values().forEach(DatadogReporter::stop);
+        reporters.clear();
     }
 
-    @Override
-    public synchronized void stop() throws Exception {
-        if (reporters != null) {
-            reporters.values().forEach(r -> r.stop());
-            reporters.clear();
-        }
-    }
-
-    @Override
-    public void postInitialize() throws Exception {
-        updateReporters();
-    }
-
-    public synchronized void updateReporters() {
-
-        if (reporters == null) {
-            this.reporters = new LinkedHashMap<>();
-        }
+    synchronized void updateReporters(@NonNull List<DataDogEndpoint> endpoints) {
 
         MetricRegistry registry = Metrics.metricRegistry();
-
-        MetricsDatadogConfig config = MetricsDatadogConfig.instance();
-        if (config == null) {
-            LOGGER.warning("No configuration found for MetricsDatadogConfig.");
-            return;
-        }
-
-        List<DataDogEndpoint> endpoints = config.getEndpointsList().toList();
 
         Set<DataDogEndpoint> toStop = new HashSet<DataDogEndpoint>(reporters.keySet());
 

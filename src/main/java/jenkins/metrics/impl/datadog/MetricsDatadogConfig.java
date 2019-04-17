@@ -4,13 +4,16 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.Util;
+import hudson.init.TermMilestone;
+import hudson.init.Terminator;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
 import hudson.util.DescribableList;
 import hudson.util.FormValidation;
 import jenkins.model.GlobalConfiguration;
-import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -33,11 +36,22 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
 
     private DescribableList<DataDogEndpoint, Descriptor<DataDogEndpoint>> endpointsList;
 
+    private transient MetricsDatadogReporter reporter;
+
     public MetricsDatadogConfig() {
         load();
         if (endpointsList == null) {
             endpointsList = new DescribableList<DataDogEndpoint, Descriptor<DataDogEndpoint>>(this);
         }
+        reporter = new MetricsDatadogReporter();
+        reporter.updateReporters(endpointsList.toList());
+    }
+
+    @Terminator(after= TermMilestone.STARTED)
+    @Restricted(NoExternalUse.class)
+    public static void shutdown() {
+        MetricsDatadogConfig config = instanceOrDie();
+        config.reporter.stopReporters();
     }
 
     public DescribableList<DataDogEndpoint, Descriptor<DataDogEndpoint>> getEndpointsList() {
@@ -56,7 +70,7 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
     public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
         setEndpointsList(req.bindJSONToList(DataDogEndpoint.class, json.get("endpointsList")));
         save();
-        Jenkins.get().getPlugin(PluginImpl.class).updateReporters();
+        reporter.updateReporters(endpointsList.toList());
         return true;
     }
 
@@ -214,8 +228,13 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
         }
     }
 
-    public static MetricsDatadogConfig instance() {
-        return ExtensionList.lookup(GlobalConfiguration.class).get(MetricsDatadogConfig.class);
+    @NonNull
+    public static MetricsDatadogConfig instanceOrDie() {
+        MetricsDatadogConfig config = ExtensionList.lookup(GlobalConfiguration.class).get(MetricsDatadogConfig.class);
+        if (config == null) {
+            throw new IllegalStateException("MetricsDatadogConfig is not in the list of extensions");
+        }
+        return config;
     }
 
 }
