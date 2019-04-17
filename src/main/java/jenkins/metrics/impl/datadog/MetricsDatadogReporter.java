@@ -1,6 +1,7 @@
 package jenkins.metrics.impl.datadog;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.annotations.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import jenkins.metrics.api.Metrics;
 import jenkins.metrics.impl.datadog.MetricsDatadogConfig.DataDogEndpoint;
@@ -95,4 +96,9 @@ class MetricsDatadogReporter {
         return null;
     }
 
+    @NonNull
+    @VisibleForTesting
+    Map<DataDogEndpoint, DatadogReporter> getReporters() {
+        return reporters;
+    }
 }

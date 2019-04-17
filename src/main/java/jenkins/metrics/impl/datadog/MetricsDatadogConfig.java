@@ -66,6 +66,10 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
         }
     }
 
+    public MetricsDatadogReporter getReporter() {
+        return reporter;
+    }
+
     @Override
     public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
         setEndpointsList(req.bindJSONToList(DataDogEndpoint.class, json.get("endpointsList")));
