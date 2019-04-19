@@ -105,6 +105,11 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
             return Objects.equals(tags, that.tags);
         }
 
+        @Override
+        public int hashCode() {
+            return Objects.hash(tags);
+        }
+
         abstract boolean isValid();
     }
 
