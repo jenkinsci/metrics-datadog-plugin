@@ -11,6 +11,7 @@ import hudson.model.Descriptor;
 import hudson.util.DescribableList;
 import hudson.util.FormValidation;
 import jenkins.model.GlobalConfiguration;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -143,6 +144,7 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
 
             public FormValidation doTestUdpEndpoint(@QueryParameter("statsdHost") final String formStatsdHost, @QueryParameter("port") final int formPort) {
                 try{
+                    Jenkins.get().checkPermission(Jenkins.ADMINISTER);
                     if (formStatsdHost == null || formStatsdHost.isEmpty()) return FormValidation.error("");
                     if (formPort == 0) return FormValidation.error(Messages.DatadogUdpEndpoint_DescriptorImpl_errors_validation_invalidPort());
                     new DatadogUdpEndpoint(null, formStatsdHost, formPort).checkResolvable();
