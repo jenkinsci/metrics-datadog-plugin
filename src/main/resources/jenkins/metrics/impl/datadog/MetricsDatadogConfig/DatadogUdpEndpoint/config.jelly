@@ -9,5 +9,8 @@
   <f:entry title="${%tags}" field="tags">
     <f:repeatableHeteroProperty field="tags" hasHeader="true"/>
   </f:entry>
+  <f:entry title="${%prefixFilters}" field="prefixFilters">
+    <f:repeatableHeteroProperty field="prefixFilters" hasHeader="false"/>
+  </f:entry>
   <f:validateButton title="${%testConnectivity}" progress="${%testing}" method="testUdpEndpoint" with="statsdHost,port" />
 </j:jelly>
