@@ -27,6 +27,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 
 @Extension
 public class MetricsDatadogConfig extends GlobalConfiguration {
@@ -55,6 +59,7 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
         config.getRegistry().stopReporters();
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public DescribableList<DataDogEndpoint, Descriptor<DataDogEndpoint>> getEndpointsList() {
         return endpointsList;
     }
@@ -82,14 +87,16 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
     public static abstract class DataDogEndpoint extends AbstractDescribableImpl<DataDogEndpoint> {
 
         private final List<Tag> tags;
+        private final List<PrefixFilter> prefixFilters;
 
-        public DataDogEndpoint(List<Tag> tags) {
-            this.tags = tags;
+        public DataDogEndpoint(List<Tag> tags, List<PrefixFilter> prefixFilters) {
+            this.tags = Util.fixNull(tags);
+            this.prefixFilters = Util.fixNull(prefixFilters);
         }
 
         @NonNull
         public List<Tag> getTags() {
-            return Util.fixNull(tags);
+            return new ArrayList<Tag>(tags);
         }
 
         public List<String> getMergedTags() {
@@ -98,17 +105,26 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
             return mergedTags;
         }
 
+        @NonNull
+        public List<PrefixFilter> getPrefixFilters() {
+            return new ArrayList<PrefixFilter>(prefixFilters);
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             DataDogEndpoint that = (DataDogEndpoint) o;
-            return Objects.equals(tags, that.tags);
+            return Objects.equals(tags, that.tags) &&
+                   Objects.equals(prefixFilters, that.prefixFilters);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(tags);
+            return Objects.hash(
+                Stream.concat(tags.stream(), prefixFilters.stream())
+                      .collect(Collectors.toList())
+            );
         }
 
         abstract boolean isValid();
@@ -120,8 +136,8 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
         private final int port;
 
         @DataBoundConstructor
-        public DatadogUdpEndpoint(List<Tag> tags, String statsdHost, int port) {
-            super(tags);
+        public DatadogUdpEndpoint(List<PrefixFilter> prefixFilters, List<Tag> tags, String statsdHost, int port) {
+            super(tags, prefixFilters);
             this.statsdHost = statsdHost;
             this.port = port;
         }
@@ -147,7 +163,7 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
                     Jenkins.get().checkPermission(Jenkins.ADMINISTER);
                     if (formStatsdHost == null || formStatsdHost.isEmpty()) return FormValidation.error("");
                     if (formPort == 0) return FormValidation.error(Messages.DatadogUdpEndpoint_DescriptorImpl_errors_validation_invalidPort());
-                    new DatadogUdpEndpoint(null, formStatsdHost, formPort).checkResolvable();
+                    new DatadogUdpEndpoint(null, null, formStatsdHost, formPort).checkResolvable();
                 } catch (UnknownHostException e) {
                     return FormValidation.error(Messages.DatadogUdpEndpoint_DescriptorImpl_errors_validation_invalidHost());
                 } catch (IllegalArgumentException e) {
@@ -238,6 +254,40 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
             return Objects.hash(key, value);
         }
     }
+
+    public static class PrefixFilter extends AbstractDescribableImpl<PrefixFilter> {
+        private final String prefix;
+
+        @DataBoundConstructor
+        public PrefixFilter(String prefix) {
+            this.prefix = prefix;
+        }
+
+        public String getPrefix() {
+            return prefix;
+        }
+        @Extension
+        public static class DescriptorImpl extends Descriptor<PrefixFilter> {
+            @Override
+            public String getDisplayName() {
+                return Messages.PrefixFilter_DescriptorImpl_displayName();
+            }
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            PrefixFilter i = (PrefixFilter) o;
+            return Objects.equals(prefix, i.prefix);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(prefix);
+        }
+    }
+
 
     @NonNull
     public static MetricsDatadogConfig instanceOrDie() {

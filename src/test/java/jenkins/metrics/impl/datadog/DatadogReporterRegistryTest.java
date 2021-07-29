@@ -20,8 +20,8 @@ public class DatadogReporterRegistryTest {
         rr.then(r -> {
             MetricsDatadogConfig config = MetricsDatadogConfig.instanceOrDie();
             List<MetricsDatadogConfig.DataDogEndpoint> list = Arrays.asList(
-                    new DatadogUdpEndpoint(null, "localhost", 8125),
-                    new DatadogUdpEndpoint(null, "localhost", 18125)
+                new DatadogUdpEndpoint(null, null, "localhost", 8125),
+                new DatadogUdpEndpoint(null, null, "localhost", 18125)
             );
 
             config.setEndpointsList(list);
@@ -31,8 +31,8 @@ public class DatadogReporterRegistryTest {
         rr.then(r -> {
             MetricsDatadogConfig config = MetricsDatadogConfig.instanceOrDie();
             List<MetricsDatadogConfig.DataDogEndpoint> list = Arrays.asList(
-                    new DatadogUdpEndpoint(null, "localhost", 8125),
-                    new DatadogUdpEndpoint(null, "invalid", 999999)
+                new DatadogUdpEndpoint(null, null, "localhost", 8125),
+                new DatadogUdpEndpoint(null, null, "invalid", 999999)
             );
             config.setEndpointsList(list);
             r.configRoundtrip();

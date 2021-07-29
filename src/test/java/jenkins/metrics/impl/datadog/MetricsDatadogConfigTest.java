@@ -30,8 +30,8 @@ public class MetricsDatadogConfigTest {
     public void testConfigRoundTrip() throws Exception {
         MetricsDatadogConfig config = MetricsDatadogConfig.instanceOrDie();
         List<MetricsDatadogConfig.DataDogEndpoint> list = Arrays.asList(
-                new DatadogUdpEndpoint(null, "localhost", 8125),
-                new DatadogUdpEndpoint(null, "invalid", 999999)
+            new DatadogUdpEndpoint(null, null, "localhost", 8125),
+            new DatadogUdpEndpoint(null, null, "invalid", 999999)
         );
         config.setEndpointsList(list);
         j.configRoundtrip();
