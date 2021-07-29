@@ -1,11 +1,13 @@
 package jenkins.metrics.impl.datadog;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.MetricFilter;
 import com.google.common.annotations.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import jenkins.metrics.api.Metrics;
 import jenkins.metrics.impl.datadog.MetricsDatadogConfig.DataDogEndpoint;
 import jenkins.metrics.impl.datadog.MetricsDatadogConfig.DatadogUdpEndpoint;
+import jenkins.metrics.impl.datadog.MetricsDatadogConfig.PrefixFilter;
 import org.coursera.metrics.datadog.DatadogReporter;
 import org.coursera.metrics.datadog.DatadogReporter.Expansion;
 import org.coursera.metrics.datadog.transport.Transport;
@@ -63,10 +65,21 @@ class DatadogReportersRegistry {
             // TODO - needs to be configurable through Endpoint configuration:
             EnumSet<Expansion> expansions = EnumSet.of(Expansion.COUNT);
 
+            List<PrefixFilter> prefixFilters = endpoint.getPrefixFilters();
+            MetricFilter filter = MetricFilter.ALL;
+
+            if ( prefixFilters.size() > 0 ) {
+                LOGGER.log(Level.INFO, "Using SimpleMetricFilter");
+                filter = new SimpleMetricFilter(prefixFilters);
+            } else {
+                LOGGER.log(Level.INFO, "Using MetricFilter.ALL");
+            }
+
             DatadogReporter reporter = DatadogReporter.forRegistry(registry)
                     .withTransport(transporter)
                     .withExpansions(expansions)
                     .withTags(endpoint.getMergedTags())
+                    .filter(filter)
                     .build();
 
             reporters.put(endpoint, reporter);
