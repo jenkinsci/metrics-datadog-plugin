@@ -1,14 +1,13 @@
 package jenkins.metrics.impl.datadog;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Arrays;
+import java.util.List;
 import jenkins.metrics.impl.datadog.MetricsDatadogConfig.DatadogUdpEndpoint;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.RestartableJenkinsRule;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class DatadogReporterRegistryTest {
 
@@ -20,9 +19,8 @@ public class DatadogReporterRegistryTest {
         rr.then(r -> {
             MetricsDatadogConfig config = MetricsDatadogConfig.instanceOrDie();
             List<MetricsDatadogConfig.DataDogEndpoint> list = Arrays.asList(
-                new DatadogUdpEndpoint(null, null, "localhost", 8125),
-                new DatadogUdpEndpoint(null, null, "localhost", 18125)
-            );
+                    new DatadogUdpEndpoint(null, null, "localhost", 8125),
+                    new DatadogUdpEndpoint(null, null, "localhost", 18125));
 
             config.setEndpointsList(list);
             r.configRoundtrip();
@@ -31,14 +29,12 @@ public class DatadogReporterRegistryTest {
         rr.then(r -> {
             MetricsDatadogConfig config = MetricsDatadogConfig.instanceOrDie();
             List<MetricsDatadogConfig.DataDogEndpoint> list = Arrays.asList(
-                new DatadogUdpEndpoint(null, null, "localhost", 8125),
-                new DatadogUdpEndpoint(null, null, "invalid", 999999)
-            );
+                    new DatadogUdpEndpoint(null, null, "localhost", 8125),
+                    new DatadogUdpEndpoint(null, null, "invalid", 999999));
             config.setEndpointsList(list);
             r.configRoundtrip();
             // only one reporter here as one is invalid
             assertThat(config.getRegistry().getReporters().size()).isEqualTo(1);
         });
     }
-
 }
