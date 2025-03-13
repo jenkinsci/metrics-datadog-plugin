@@ -1,0 +1,4 @@
+<?jelly escape-by-default='true'?>
+<div>
+   This plugin is a Metrics Plugin reporter for DataDog.
+</div>
