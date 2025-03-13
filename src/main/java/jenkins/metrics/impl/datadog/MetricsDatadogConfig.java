@@ -59,7 +59,6 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
         config.getRegistry().stopReporters();
     }
 
-    @SuppressFBWarnings("EI_EXPOSE_REP")
     public DescribableList<DataDogEndpoint, Descriptor<DataDogEndpoint>> getEndpointsList() {
         return endpointsList;
     }
