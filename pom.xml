@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>4.20</version>
+        <version>4.88</version>
         <relativePath />
     </parent>
 
@@ -17,8 +17,9 @@
     <properties>
         <revision>1.1</revision>
         <changelist>-SNAPSHOT</changelist>
-        <jenkins.version>2.302</jenkins.version>
-        <java.level>8</java.level>
+        <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
+        <jenkins.baseline>2.462</jenkins.baseline>
+        <jenkins.version>${jenkins.baseline}.3</jenkins.version>
     </properties>
 
     <name>Metrics DataDog Plugin</name>
@@ -30,12 +31,22 @@
             <url>https://opensource.org/licenses/MIT</url>
         </license>
     </licenses>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.jenkins.tools.bom</groupId>
+        <artifactId>bom-${jenkins.baseline}.x</artifactId>
+        <version>4228.v0a_71308d905b_</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>metrics</artifactId>
-            <version>4.0.2.8</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -67,18 +78,10 @@
         </dependency>
     </dependencies>
 
-    <developers>
-        <developer>
-            <id>mpapo</id>
-            <name>Michaël Pailloncy</name>
-            <email>mpailloncy@cloudbees.com</email>
-        </developer>
-    </developers>
-
 
     <url>https://wiki.jenkins.io/display/JENKINS/Metrics-Datadog-Plugin</url>
     <scm>
-        <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+        <connection>scm:git:https://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
       <tag>HEAD</tag>
