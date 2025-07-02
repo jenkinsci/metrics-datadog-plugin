@@ -17,7 +17,7 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -77,7 +77,7 @@ public class MetricsDatadogConfig extends GlobalConfiguration {
     }
 
     @Override
-    public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
+    public boolean configure(StaplerRequest2 req, JSONObject json) throws FormException {
         setEndpointsList(req.bindJSONToList(DataDogEndpoint.class, json.get("endpointsList")));
         save();
         getRegistry().updateReporters(endpointsList.toList());
